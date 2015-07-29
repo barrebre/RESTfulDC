@@ -1,0 +1,381 @@
+/*
+*
+*   DC RUM Restful Helper Stylesheet
+*
+*   For questions, please email brett.barrett@dynatrace.com
+*
+*   Version: 1.10
+*/
+
+html {
+    height: 100%;
+    margin: 0;
+    overflow-y: hidden;
+}
+
+body {
+    background-color: rgb(247, 247, 247);
+    margin: 0px;
+}
+
+div.title {
+    height: 2.5em;
+    width: 100%;
+    border-bottom: 1px solid black;
+    color:white;
+    background-color: #1B74B4;
+    position: relative;
+}
+
+div.body {
+    height: 90%;
+    width: 100%;
+    overflow: hidden;
+    font-family: Arial;
+}
+
+div.footer {
+    position: absolute;
+    bottom: 0px;
+    height: 2em;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5em;
+    background-color: #1B74B4;
+}
+
+div#helpDiv, #largeDataDiv{
+    display: none;
+
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+
+    padding: 20px;
+
+    border-style: solid;
+    border-color: gray;
+    border-width: 2px;
+    background-color: white;
+
+    overflow-y: hidden;
+}
+
+div#largeDataDiv h1{
+    -webkit-margin-before: 0;
+    border-bottom: solid;
+}
+
+div#largeDataContent, #helpContent{
+    overflow-y:scroll;
+    height:90%;
+}
+
+div.closeButton{
+    position: absolute;
+    top: 0;
+    right: 0;
+    text-decoration: underline;
+    cursor: pointer;
+    color: black;
+    padding-top: 1%;
+    padding-right: 1%;
+}
+
+div.column {
+    width: 32%;
+    min-width: 150px;
+    margin-left: 1%;
+    height:100%;
+    float: left;
+    margin-top: 1%;
+    overflow: hidden;
+}
+
+div.footerCol a{
+    color:white;
+}
+
+div.footerCol {
+    position: absolute;
+    float: left;
+    width: 38%;
+    min-width: 150px;
+    margin-left: 8%;
+    bottom: 0px;
+    color: white;
+    padding-bottom:5px;
+}
+
+div #sampleData {
+    float: left;
+    margin-left: 1%;
+    width: 32%;
+    min-width: 150px;
+
+    margin-top: 1%;
+    overflow: hidden;
+}
+
+div.header {
+    height: 2em;
+    background-color: #adb6bc;
+    position: relative;
+}
+
+div.header button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 2.5em;
+}
+
+div#userOutputHeader{
+    height: 2em;
+    background-color: #adb6bc;
+}
+
+div.content{
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 95%;
+    width: 100%;
+    background-color: white;
+    position: relative;
+    border: solid black;
+    border-width: 1px;
+}
+
+div.lineItem {
+    padding-left:5%;
+    display: inline-block;
+    width: 100%;
+}
+
+div.lineItem h3{
+    padding-left: .5em;
+}
+
+div.lineItem textarea{
+    font-family: arial;
+}
+
+div.leftRow {
+    width: 50%;
+}
+
+div #sampleDataOutput{
+    text-align: center;
+}
+
+div #sampleDataOutput table{
+    border: 0;
+}
+
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.5em;
+    text-align: center;
+    margin: 0px;
+}
+
+h3 {
+    font-size: 1.5em;
+    font-weight: bold;
+    background-color: lightgray;
+}
+
+textarea {
+    resize: none;
+    overflow: auto;
+    font-size: 1em;
+    height: 1.5em;
+    width: 50%;
+}
+
+select {
+    font-size: 1em;
+    height: 1.5em;
+    width: 80%;
+}
+
+div.content table, td, th {
+    border: 1px solid black;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.header table, td, th {
+    border: 1px solid black;
+}
+
+th {
+    font-size: 1.5em;
+}
+
+div#sortDiv select {
+    width: 30%;
+}
+
+div #dimFiltersDiv select {
+    width: 50%;
+    float: left;
+}
+
+div #dimFiltersDiv textarea {
+    width: 40%;
+    margin-left: 5px;
+    font-family: Arial;
+    float: left;
+}
+
+div #metricFiltersDiv textarea {
+    width: 32%;
+    margin-left: 5px;
+    font-family: Arial;
+    float: left;
+}
+
+div.lineItem textarea, select{
+    width:50%;
+}
+
+div #getParameters select {
+    width: 80%;
+    float: left;
+}
+
+div #query {
+    position: absolute;
+    top: 0;
+    left: 1%;
+    height: 2.5em;
+    width: 29%;
+}
+
+div #query p, #serverNameDiv p{
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+}
+
+div #serverNameDiv{
+    position: absolute;
+    top: 0;
+    right: 1%;
+    height: 2.5em;
+    width: 29%;
+    text-align: right;
+}
+
+div#tableOfContents a{
+    color: black;
+    text-decoration: underline;
+}
+
+div#helpDiv h1{
+    -webkit-margin-before: 0;
+    text-decoration: underline;
+}
+
+div#helpDiv h2{
+    text-align:left;
+    font-weight: normal;
+}
+
+div#helpDiv h3{
+    font-size: 1.25em;
+    padding-left: .5em;
+
+    margin-top: 2em;
+    margin-bottom: .5em;
+
+    font-weight: normal;
+}
+
+div#userOutput {
+    float:left;
+    width: 98%;
+    overflow-y:auto;
+    height: 70%;
+
+    font-size: 1em;
+    padding-left: 2%;
+    padding-top: 2%;
+
+    border: solid black;
+    border-width: 1px;
+}
+
+div#userOutputDiv{
+    float: left;
+    width: 100%;
+    height: 35%;
+    overflow-x: hidden;
+    background-color: white;
+}
+
+div#restQueryParametersContent {
+    height: 65%;
+}
+
+div#busy {
+    display: none;
+    position:absolute;
+    top: 0px;
+    height: 100%;
+    left: 0px;
+    width: 100%;
+
+    background-color:rgba(0,0,0,0.6);
+}
+
+div#busyContent {
+    position: absolute;
+    width: 30%;
+    top: 40%;
+    left: 35%;
+
+    background-color: white;
+}
+
+div#busyContent h1{
+    -webkit-margin-before: 0;
+}
+
+div#busyContent center{
+    padding: 20px;
+}
+
+div#tableOfContents {
+    border-bottom: solid gray;
+    border-width: 1px;
+
+    padding-bottom: 1%;
+}
+
+div.lineItem .addButton{
+    width: 2em;
+    height: 2em;
+    position: absolute;
+    right: 2.5em;
+}
+
+div.lineItem .removeButton{
+    width: 2em;
+    height: 2em;
+    position: absolute;
+    right: .5em;
+}
