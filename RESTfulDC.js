@@ -6,7 +6,7 @@
 *
 *   For questions, please email brett.barrett@dynatrace.com
 *
-*   Version: 1.10
+*   Version: 2.0
 */
 
 /*
@@ -16,11 +16,11 @@
 // Debug mode
 var debug = false;
 
-// Information about the CAS and RESTful version
-var serverName, version;
+// Information about the CAS and RESTful path
+var serverName, path = '';
 
 // Create a dictionary for saving DC RUM internal names
-var dictionary = {};
+var dictionary = {}, resolutions = {}, timePeriods = {};
 
 // Options the user could select
 var appOptions = dataViewOptions = resolutionOptions = dimensionOptions = metricOptions = [];
@@ -31,6 +31,8 @@ var metricsList = {};
 var metricFilters = {};
 var dimFilters = {};
 var postParams = {};
+
+//  application is now referenced as datasource to avoid confusion
 var application, dataview, resolution, dimension, metric;
 
 // Parameters Cont.
@@ -40,7 +42,7 @@ var dataSourceId, sort, sortDir, sortParam, topFilter, timePeriod, numberOfPerio
 var dimensionCount = metricCount = dimFiltersCount = metricFiltersCount = -1;
 
 //  The order of the DC RUM Queried Parameters Dropdowns
-var viewOrder = ["default", "application", "dataview", "resolution", "dimension", "metric"];
+var viewOrder = ["default", "datasource", "dataview", "resolution", "dimension", "metric"];
 
 //  Text to be output to the user in the console
 var userOutput = "";
@@ -56,12 +58,13 @@ var start, now, time;
 */
 
 window.onload = function() {
-  getServerNameAndVersion();
+  getServerNameAndPath();
   addDimensionQuery();
   addMetricQuery();
   addDimensionFilterLine();
   addMetricFilterLine();
   setTimePeriods();
+  addDictionaryDefinitions();
 
   setDefaultSelectors(1);
   updateQueriedParameters("default");
@@ -74,15 +77,15 @@ window.onload = function() {
 function help(){
   if(document.getElementById("helpDiv").style.display == "block"){
     document.getElementById("helpDiv").style.display = "none";
-    window.history.pushState("", "", '/custom/'+version);
+    window.history.pushState("", "", path);
   }
   else{
     document.getElementById("helpDiv").style.display = "block";
   }
 }
 
-//  desc: Parses the URL to know what version of RESTful and the CAS host name
-function getServerNameAndVersion(){
+//  desc: Parses the URL for the path of the RESTful and the CAS host name
+function getServerNameAndPath(){
   var tmp = window.location.href, splits = [];
   tmp = tmp.substring(tmp.indexOf("//")+2);
   splits = tmp.split("/");
@@ -90,7 +93,9 @@ function getServerNameAndVersion(){
   serverName = splits[0];
   document.getElementById("serverName").value = serverName;
 
-  version = splits[2];
+  for(var i=1; i<splits.length; i++){
+    path += '/'+splits[i];
+  }
 }
 
 //  desc: Adds a Dimension select option to the DC RUM Queried Parameters
@@ -242,7 +247,7 @@ function updateQueriedParameters(caller){
 
   var params = "", index = viewOrder.indexOf(caller);
 
-  setDefaultSelectors(index+1);
+  if(caller!="resolution") setDefaultSelectors(index+1);
   disableFollowingSelectors(index+2);
 
   switch(caller){
@@ -250,7 +255,7 @@ function updateQueriedParameters(caller){
       params = "getApplications";
       updateQuerySelectors(index+1, appOptions = getPossibleParams(params,caller));
       break;
-    case "application":
+    case "datasource":
       params = "getDataViews?appId="+application;
     updateQuerySelectors(index+1, dataViewOptions = getPossibleParams(params,caller));
       break;
@@ -265,12 +270,6 @@ function updateQueriedParameters(caller){
 
       params = "getMetrics?appId="+application+"&viewId="+dataview+"&resolution="+resolution;
       updateQuerySelectors(index+1, metricOptions = getPossibleParams(params,"metric"));
-      break;
-    case "dimension":
-      // to be completed
-      break;
-    case "metric":
-      // to be completed
       break;
     default:
       alert("no case found");
@@ -302,7 +301,7 @@ function getPossibleParams(params,caller){
   response = xmlHttp.responseText;
 
   // Metric and Application callers need special parsing
-  if(caller!="metric" && caller!="application"){
+  if(caller!="metric" && caller!="datasource"){
     var results = JSON.parse(response).results+'';
     results = results.split(",");
   } else {
@@ -339,13 +338,13 @@ function sanitizeResults(results,caller){
     splits = objects[i].split("\",\"");
     array[cnt] = splits[0].substring(1);
 
-    caller=="application" ? array[cnt+1] = splits[1].substring(0,splits[1].length-1) : array[cnt+1] = splits[1];
+    caller=="datasource" ? array[cnt+1] = splits[1].substring(0,splits[1].length-1) : array[cnt+1] = splits[1];
 
     cnt = cnt+2;
   }
 
   // Fix for "]] at end
-  if(caller=="application"){
+  if(caller=="datasource"){
     array[cnt-1] = array[cnt-1].substring(0,array[cnt-1].length-3);
   }
 
@@ -354,9 +353,9 @@ function sanitizeResults(results,caller){
 
 //  desc: Queried Parameters - Sets the user-chosen variables
 function getSelectedVars(){
-  application = dictionary[document.getElementById("application").value];
+  application = dictionary[document.getElementById("datasource").value];
   dataview = dictionary[document.getElementById("dataview").value];
-  resolution = dictionary[document.getElementById("resolution").value];
+  resolution = resolutions[document.getElementById("resolution").value];
 
   getSelectedDimensions();
   getSelectedMetrics();
@@ -500,7 +499,25 @@ function updateSortParam(){
 
 //  desc: Sets time period options instead of hard coding them
 function setTimePeriods(){
-  var options = ["p","d","w","m","T","1P","1H","1D","7D","30D","3MO","12MO","FW","FM","WTD","MTD","QTD","YTD"];
+  var options = ["p: 1 period (monitoring interval, dependent on the report server settings)"];
+
+  options.push('d: 1 day');
+  options.push("w: 1 week");
+  options.push("m: 1 month");
+  options.push("T: today (since midnight)");
+  options.push("1P: last period");
+  options.push("1H: last hour");
+  options.push("1D: last day");
+  options.push("7D: last 7 days");
+  options.push("30D: last 30 days");
+  options.push("3MO: last 3 months");
+  options.push("12MO: last 12 months");
+  options.push("FW: the full week");
+  options.push("FM: the full month");
+  options.push("WTD: week to date");
+  options.push("MTD: month to date");
+  options.push("QTD: quarter to date");
+  options.push("YTD: year to date");
 
   giveOptions("timePeriod",options,0);
 }
@@ -556,7 +573,7 @@ function getEnteredParams(){
   sortDir = document.getElementById("sortDir").value;
   sortParam = document.getElementById("sortParam").value;
   topFilter = document.getElementById("topFilter").value;
-  timePeriod = document.getElementById("timePeriod").value;
+  timePeriod = timePeriods[document.getElementById("timePeriod").value];
   numberOfPeriods = document.getElementById("numberOfPeriods").value;
 
   // Custom work for specific parameters
@@ -604,13 +621,10 @@ function buildFormattedParameter(type){
 
 //  desc: Builds the JSON dimension filter
 function buildDimensionFilter(){
-  console.log(dimFilters)
   dimFilters = {};
-  console.log(dimFilters)
   var select = value = tmp = "";
 
   for(var i=3; i<document.getElementById("dimFiltersDiv").childNodes.length; i=i+2){
-    console.log("found loop: "+i)
     select = document.getElementById("dimFiltersDiv").childNodes[i].value;
     value = document.getElementById("dimFiltersDiv").childNodes[i+1].value;
 
@@ -676,8 +690,11 @@ function processResults(results,caller){
   // dataview doesn't include results every other result
   if(caller == "dataview"){
     for(var i=0; i<results.length; i++){
-      dictionary[results[i]]=results[i];
-      selectList.push(results[i]);
+      // Find which resolution entry has the value
+      for(var j=0; j<Object.keys(resolutions).length; j++){
+        if(resolutions[Object.keys(resolutions)[j]] == results[i])
+          selectList.push(Object.keys(resolutions)[j]);
+      }
     }
   }
   else if(caller == "metric"){
@@ -707,12 +724,7 @@ function processResults(results,caller){
 //  index: Which index of viewOrder to set the default selector
 function setDefaultSelectors(index){
   for(var i=index; i<viewOrder.length; i++){
-    // In case it's *an* application
-    if(i==1){
-      document.getElementById(viewOrder[i]).options[0]=new Option("Please select a DC RUM "+viewOrder[i]);
-    } else {
-      document.getElementById(viewOrder[i]).options[0]=new Option("Please select a "+viewOrder[i]);
-    }
+    document.getElementById(viewOrder[i]).options[0]=new Option("Please select a "+viewOrder[i]);
     document.getElementById(viewOrder[i]).selectedIndex = 0;
   }
 }
@@ -740,13 +752,13 @@ function disableFollowingSelectors(index){
 // index: Which index of viewOrder to update
 // results: With which values to update
 function updateQuerySelectors(index, results){
-  var cnt, object;
+  var cnt, object, selectedVals = [];
 
   switch(viewOrder[index]){
-    case "application":
+    case "datasource":
       document.getElementById("userOutput").innerHTML = "";
       userOutput = "Connected to the CAS successfully.<br>";
-      userOutput += "Please select a DC RUM Application.<br>";
+      userOutput += "Please select a Data Source.<br>";
       break;
     case "dataview":
       userOutput = "Please select a Dataview.<br>";
@@ -758,26 +770,36 @@ function updateQuerySelectors(index, results){
       userOutput = "Please select a Dimension and a Metric.<br>";
       for(var i=1; i<dimensionCount+1; i++){
         document.getElementById("dimension"+i).disabled = false;
+        selectedVals[i] = document.getElementById("dimension"+i).value;
+
         for(var j=1; j<results.length; j++){
           document.getElementById("dimension"+i).options[j] = null;
         }
         for(var j=0; j<results.length; j++){
           document.getElementById("dimension"+i).options[j+1] = new Option(results[j]);
+          if(results[j] == selectedVals[i]) document.getElementById("dimension"+i).selectedIndex = j+1;
         }
       }
+      break;
     case "metric":
       for(var i=1; i<metricCount+1; i++){
         document.getElementById("metric"+i).disabled = false;
+        selectedVals[i] = document.getElementById("metric"+i).value;
+
         for(var j=1; j<results.length; j++){
           document.getElementById("metric"+i).options[j] = null;
         }
         for(var j=0; j<results.length; j++){
           document.getElementById("metric"+i).options[j+1] = new Option(results[j]);
+          if(results[j] == selectedVals[i]) document.getElementById("metric"+i).selectedIndex = j+1;
         }
       }
+      break;
     default:
   }
+
   object = document.getElementById(viewOrder[index]);
+  selectedVals[0] = object.value;
   cnt = object.options.length;
 
   object.disabled = false;
@@ -788,6 +810,7 @@ function updateQuerySelectors(index, results){
 
   for(var i=0; i<results.length; i++){
     object.options[i+1] = new Option(results[i]);
+    if(results[i] == selectedVals[0]) object.selectedIndex = i+1;
   }
 
   if(viewOrder[index] != "metric") output();
@@ -942,6 +965,9 @@ function defined(object){
 }
 
 //  desc: Gives options to a selector
+//  target: Which selector to give options
+//  options: An array of the options to give
+//  start: At which index to start (1 if a default value)
 function giveOptions(target, options, start){
   var select = document.getElementById(target);
 
@@ -965,16 +991,45 @@ function setHelpAnchors(){
     }
   }
 
-  //createTOC(links);
   var tmp = "<ol>";
 
   for(var i=0; i<links.length; i++){
     tmp += "<li><a href='#"+links[i]+"'>"+links[i]+"</a></li>";
   }
-
   tmp += "</ol>";
 
   document.getElementById("tableOfContents").innerHTML += tmp;
+}
+
+//  desc: Sets the default dictionary terms
+function addDictionaryDefinitions(){
+  // Time period terms
+  timePeriods["p: 1 period (monitoring interval, dependent on the report server settings)"] = "p";
+  timePeriods["d: 1 day"] = "d";
+  timePeriods["w: 1 week"] = "w";
+  timePeriods["m: 1 month"] = "m";
+  timePeriods["T: today (since midnight)"] = "T";
+  timePeriods["1P: last period"] = "1P";
+  timePeriods["1H: last hour"] = "1H";
+  timePeriods["1D: last day"] = "1D";
+  timePeriods["7D: last 7 days"] = "7D";
+  timePeriods["30D: last 30 days"] = "30D";
+  timePeriods["3MO: last 3 months"] = "3MO";
+  timePeriods["12MO: last 12 months"] = "12MO";
+  timePeriods["FW: the full week"] = "FW";
+  timePeriods["FM: the full month"] = "FM";
+  timePeriods["WTD: week to date"] = "WTD";
+  timePeriods["MTD: month to date"] = "MTD";
+  timePeriods["QTD: quarter to date"] = "QTD";
+  dictionary["YTD: year to date"] = "YTD";
+
+  // Resolution terms
+  resolutions["r: one period (monitoring interval, dependent on the report server settings)"] = "r"
+  resolutions["1: one hour"] = "1";
+  resolutions["6: six hours"] = "6";
+  resolutions["d: one day"] = "d";
+  resolutions["w: one week"] = "w";
+  resolutions["m: one month"] = "m";
 }
 
 //  desc: Creates the Table of Contents

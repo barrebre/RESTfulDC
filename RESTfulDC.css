@@ -4,7 +4,7 @@
 *
 *   For questions, please email brett.barrett@dynatrace.com
 *
-*   Version: 1.10
+*   Version: 2.0
 */
 
 html {
@@ -322,13 +322,13 @@ div#userOutput {
 div#userOutputDiv{
     float: left;
     width: 100%;
-    height: 35%;
+    height: 50%;
     overflow-x: hidden;
     background-color: white;
 }
 
 div#restQueryParametersContent {
-    height: 65%;
+    height: 55%;
 }
 
 div#busy {
