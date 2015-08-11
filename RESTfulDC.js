@@ -1123,4 +1123,6 @@ function reset(){
   document.getElementById('selectMetricFilterOperator').selectedIndex = 0;
   document.getElementById('numberOfPeriods').value = 1;
   document.getElementById('timePeriod').selectedIndex = 0;
+  document.getElementById("sampleDataOutput").innerHTML = '';
+  document.getElementById("largeDataContent").innerHTML = '';
 }
