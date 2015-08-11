@@ -6,7 +6,7 @@
 *
 *   For questions, please email brett.barrett@dynatrace.com
 *
-*   Version: 2.0.2
+*   Version: 2.0.3
 */
 
 /*
@@ -1023,7 +1023,7 @@ function addDictionaryDefinitions(){
   timePeriods["WTD: week to date"] = "WTD";
   timePeriods["MTD: month to date"] = "MTD";
   timePeriods["QTD: quarter to date"] = "QTD";
-  dictionary["YTD: year to date"] = "YTD";
+  timePeriods["YTD: year to date"] = "YTD";
 
   // Resolution terms
   resolutions["r: one period (monitoring interval, dependent on the report server settings)"] = "r"
