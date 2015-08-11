@@ -4,7 +4,7 @@
 *
 *   For questions, please email brett.barrett@dynatrace.com
 *
-*   Version: 2.0
+*   Version: 2.0.1
 */
 
 html {
@@ -28,7 +28,7 @@ div.title {
 }
 
 div.body {
-    height: 90%;
+    height: 93%;
     width: 100%;
     overflow: hidden;
     font-family: Arial;
@@ -37,10 +37,10 @@ div.body {
 div.footer {
     position: absolute;
     bottom: 0px;
-    height: 2em;
+    height: 1.5em;
     width: 100%;
     text-align: center;
-    font-size: 1.5em;
+    font-size: 1em;
     background-color: #1B74B4;
 }
 
@@ -106,7 +106,7 @@ div.footerCol {
     margin-left: 8%;
     bottom: 0px;
     color: white;
-    padding-bottom:5px;
+    padding-bottom: 2px;
 }
 
 div #sampleData {
@@ -135,6 +135,7 @@ div.header button {
 div#userOutputHeader{
     height: 2em;
     background-color: #adb6bc;
+    position: relative;
 }
 
 div.content{

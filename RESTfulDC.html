@@ -6,7 +6,7 @@
 
    For questions, please email brett.barrett@dynatrace.com
 
-   Version: 2.0
+   Version: 2.0.1
 -->
 
 <html>
@@ -97,7 +97,7 @@
           </div>
 
           <div id="sortDiv" class="lineItem">
-            <h3>Sort </h3>
+            <h3>Sort</h3>
             <select id="sortParam" class="rightRow" style="width: 60%;">
               <option value="">Select a parameter to sort by</option>
             </select><select id="sortDir" class="leftRow" style="width: 30%;">
@@ -118,8 +118,9 @@
           </div>
         </div>
         <div id="userOutputDiv">
-          <div id="userOutputHeader">
+          <div id="userOutputHeader" class="header">
             <h2>Console</h2>
+            <button id='copyURLButton' onclick="copyURL();">Copy URL</button>
           </div>
           <div id="userOutput"></div>
         </div>
@@ -136,7 +137,7 @@
 
       <div class="footer">
         <div class="footerCol">
-          Developed by <a href="mailto:brett.barrett@dynatrace.com?Subject=RESTfulDC">Brett Barrett</a>
+          Developed by Brett Barrett
         </div>
         <div class="footerCol" style="left: 46%;">
           <a onClick="help();" style="text-decoration: underline; cursor:pointer;">Help</a>

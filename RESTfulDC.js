@@ -6,7 +6,7 @@
 *
 *   For questions, please email brett.barrett@dynatrace.com
 *
-*   Version: 2.0
+*   Version: 2.0.1
 */
 
 /*
@@ -1040,7 +1040,6 @@ function createTOC(contents){
   for(var i=0; i<contents.length; i++){
     tmp += "<li><a href='#"+contents[i]+"'>"+contents[i]+"</a></li>";
   }
-
   tmp += "</ol>";
 
   document.getElementById("tableOfContents").innerHTML += tmp;
@@ -1056,36 +1055,40 @@ function enlargeSampleData(){
   }
 }
 
-//  desc: Copies text
-//  location: Which div to select
-//  nodeNum: Which node to copy from the div
-function clipboard(location, nodeNum){
-  var text = document.getElementById(location).childNodes[nodeNum];
+//  desc: Copies the getSampleData URL, if one exists, from the userOutput div
+function copyURL(){
+  var node = document.getElementById('userOutput'), text;
 
-  defined(text) ? selectText(text) : alert("There is nothing to be copied");
+  for(var i=node.childNodes.length-1; i>-1; i--){
+    if(node.childNodes[i].nodeType == 3){
+      if(node.childNodes[i].data.indexOf("http") > -1 ){
+        text = node.childNodes[i];
+        selectText(text);
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
 
-  var successful = document.execCommand('copy');
-  var msg = successful ? 'successful' : 'unsuccessful';
+        userOutput = "Copy was "+msg+".<br>"; output();
+        return;
+      }
+    }
+  }
 
-  userOutput = "Copy was "+msg+".<br>";
-  output();
+  userOutput = "Copy was unsuccessful.<br>"; output();
 }
 
 //  desc: Selects a body of text
-//  element:
+//  element: What to be selected
 function selectText(element) {
-  var doc = document;
-  var text = element;
   var range, selection;
 
-  if (doc.body.createTextRange) {
+  if (document.body.createTextRange) {
       range = document.body.createTextRange();
-      range.moveToElementText(text);
+      range.moveToElementText(element);
       range.select();
   } else if (window.getSelection) {
       selection = window.getSelection();
       range = document.createRange();
-      range.selectNodeContents(text);
+      range.selectNodeContents(element);
       selection.removeAllRanges();
       selection.addRange(range);
   }
