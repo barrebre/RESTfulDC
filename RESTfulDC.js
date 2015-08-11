@@ -841,7 +841,7 @@ function getSampleData(){
 
   var url = connection+serverName+"/rest/dmiquery/getDMIData3?"+param;
 
-  userOutput = "<font color='blue'>"+url+"</font><br>"; output();
+  userOutput = url+"<br>"; output();
   userOutput = "Fetching data from the CAS."; output();
 
   http.open("GET", url, true);
