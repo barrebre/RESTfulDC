@@ -6,7 +6,7 @@
 *
 *   For questions, please email brett.barrett@dynatrace.com
 *
-*   Version: 2.0.3
+*   Version: 2.0.4
 */
 
 /*
@@ -297,7 +297,7 @@ function getPossibleParams(params,caller){
   catch(e){
     if(e.name == 'NetworkError'){
       alert("There was an error connecting to the CAS. Verify the server name.");
-      userOutput += "Couldn't connect to CAS "+serverName+".<br>"; output();
+      userOutput += "<font color='red'>Couldn't connect to CAS "+serverName+".</font><br>"; output();
     }
   }
 
@@ -759,7 +759,7 @@ function updateQuerySelectors(index, results){
 
   switch(viewOrder[index]){
     case "datasource":
-      userOutput += "Connected to the CAS successfully.<br>";
+      userOutput += "<font color='green'>Connected to the CAS successfully.</font><br>";
       userOutput += "Please select a Data Source.<br>";
       break;
     case "dataview":
@@ -841,7 +841,7 @@ function getSampleData(){
 
   var url = connection+serverName+"/rest/dmiquery/getDMIData3?"+param;
 
-  userOutput = url+"<br>"; output();
+  userOutput = "<font color='blue'>"+url+"</font><br>"; output();
   userOutput = "Fetching data from the CAS."; output();
 
   http.open("GET", url, true);
@@ -853,11 +853,11 @@ function getSampleData(){
       var jsonResponse = JSON.parse(http.responseText);
 
       if(jsonResponse.rawData.length == 0){
-        userOutput = "<br>The CAS returned an empty data set. ";
+        userOutput = "<br><font color='red'>The CAS returned an empty data set</font>. ";
         userOutput += "Please verify your dimensions and metrics are valid and make sense. ";
         userOutput += "If those are valid, check your filters.<br>";
       } else {
-        userOutput = "Fetched data in "+time+" ms.<br>";
+        userOutput = "<font color='green'>Fetched data in "+time+" ms.</font><br>";
       }
       output();
       buildResultsTable(jsonResponse);
@@ -914,7 +914,7 @@ function buildResultsTable(response){
     // Better to send no data than bad data
 
     if(tmp.length>columns){
-      userOutput += "The CAS returned malformed data for "+tmp[0]+". It has been ommitted from the results table.<br>";
+      userOutput += "The CAS returned malformed data for <font color='red'>"+tmp[0]+"</font>. It has been ommitted from the results table.<br>";
       //tblRow += "<td>" + tmp[0] + "</td>";
     } else {
       for(var i=0; i<columns; i++){
@@ -941,7 +941,7 @@ function cancelRequest(){
   http.abort();
   http.onreadystatechange = null;
 
-  userOutput = "User cancelled request after "+time+" ms.<br>"; output();
+  userOutput = "<font color='red'>User cancelled request after "+time+" ms.</font><br>"; output();
 }
 
 //  desc: Used to update the server name
@@ -1066,16 +1066,19 @@ function copyURL(){
       if(node.childNodes[i].data.indexOf("http") > -1 ){
         text = node.childNodes[i];
         selectText(text);
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
+        if(document.execCommand('copy')){
+          userOutput = "<font color='green'>Successfully copied the request URL.</font><br>";
+        } else {
+          userOutput = "<font color='red'>Unsuccessfully copied the request URL.</font><br>";
+        }
 
-        userOutput = "Copy was "+msg+".<br>"; output();
+        output();
         return;
       }
     }
   }
 
-  userOutput = "Copy was unsuccessful.<br>"; output();
+  userOutput = "<font color='red'>Unsuccessfully copied the request URL.</font><br>"; output();
 }
 
 //  desc: Selects a body of text
