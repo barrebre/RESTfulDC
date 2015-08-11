@@ -6,7 +6,7 @@
 *
 *   For questions, please email brett.barrett@dynatrace.com
 *
-*   Version: 2.0.1
+*   Version: 2.0.2
 */
 
 /*
@@ -16,8 +16,8 @@
 // Debug mode
 var debug = false;
 
-// Information about the CAS and RESTful path
-var serverName, path = '';
+// Information about the connection type (http/https), CAS, and RESTful path
+var connection, serverName, path = '';
 
 // Create a dictionary for saving DC RUM internal names
 var dictionary = {}, resolutions = {}, timePeriods = {};
@@ -87,8 +87,11 @@ function help(){
 //  desc: Parses the URL for the path of the RESTful and the CAS host name
 function getServerNameAndPath(){
   var tmp = window.location.href, splits = [];
-  tmp = tmp.substring(tmp.indexOf("//")+2);
-  splits = tmp.split("/");
+  tmp = tmp.split("//");
+
+  connection = tmp[0]+"//";
+
+  splits = tmp[1].split("/");
 
   serverName = splits[0];
   document.getElementById("serverName").value = serverName;
@@ -257,11 +260,11 @@ function updateQueriedParameters(caller){
       break;
     case "datasource":
       params = "getDataViews?appId="+application;
-    updateQuerySelectors(index+1, dataViewOptions = getPossibleParams(params,caller));
+      updateQuerySelectors(index+1, dataViewOptions = getPossibleParams(params,caller));
       break;
     case "dataview":
       params = "getResolutions?appId="+application+"&viewId="+dataview;
-    updateQuerySelectors(index+1, resolutionOptions = getPossibleParams(params,caller));
+      updateQuerySelectors(index+1, resolutionOptions = getPossibleParams(params,caller));
       break;
     case "resolution":
       index++;
@@ -281,7 +284,7 @@ function updateQueriedParameters(caller){
 //  caller: Who initiated the method
 function getPossibleParams(params,caller){
   params = typeof params !== 'undefined' ? params : "";
-  var url = "https://"+serverName+"/rest/dmiquery/"+params;
+  var url = connection+serverName+"/rest/dmiquery/"+params;
 
   document.getElementById("currQuery").innerHTML = url;
 
@@ -294,7 +297,7 @@ function getPossibleParams(params,caller){
   catch(e){
     if(e.name == 'NetworkError'){
       alert("There was an error connecting to the CAS. Verify the server name.");
-      userOutput = "Couldn't connect to CAS "+serverName+".<br>"; output();
+      userOutput += "Couldn't connect to CAS "+serverName+".<br>"; output();
     }
   }
 
@@ -756,8 +759,7 @@ function updateQuerySelectors(index, results){
 
   switch(viewOrder[index]){
     case "datasource":
-      document.getElementById("userOutput").innerHTML = "";
-      userOutput = "Connected to the CAS successfully.<br>";
+      userOutput += "Connected to the CAS successfully.<br>";
       userOutput += "Please select a Data Source.<br>";
       break;
     case "dataview":
@@ -837,7 +839,7 @@ function getSampleData(){
 
   http = new XMLHttpRequest();
 
-  var url = "https://"+serverName+"/rest/dmiquery/getDMIData3?"+param;
+  var url = connection+serverName+"/rest/dmiquery/getDMIData3?"+param;
 
   userOutput = url+"<br>"; output();
   userOutput = "Fetching data from the CAS."; output();
@@ -1092,4 +1094,30 @@ function selectText(element) {
       selection.removeAllRanges();
       selection.addRange(range);
   }
+}
+
+//  desc: Resets the helper back to its default state
+function reset(){
+  // Resets the server name value
+  getServerNameAndPath();
+
+  // Removes added lines
+  while (dimFiltersCount>0) removeDimensionFilterLine();
+  while (metricFiltersCount>0) removeMetricFilterLine();
+  while (dimensionCount>0) removeDimensionQuery();
+  while (metricCount>0) removeMetricQuery();
+
+  // Notifies the user
+  document.getElementById("userOutput").innerHTML = '';
+  userOutput = "Reset the RESTful Helper.<br>"; output();
+
+  // Performs the onload query
+  updateQueriedParameters('default');
+
+  // Sets all other fields back to default
+  document.getElementById('textAreaDimFilter').value = '';
+  document.getElementById('textAreaMetricFilter').value = '';
+  document.getElementById('selectMetricFilterOperator').selectedIndex = 0;
+  document.getElementById('numberOfPeriods').value = 1;
+  document.getElementById('timePeriod').selectedIndex = 0;
 }
