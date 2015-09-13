@@ -392,6 +392,8 @@ function updateDimensionFilters(){
   for(var i=1; i<combinedList.length; i++){
     document.getElementById("selectDimFilter").options[i]=null;
   }
+  
+  document.getElementById("textAreaDimFilter").value = "";
 
   for(var i=1; i<combinedList.length+1; i++){
     document.getElementById("selectDimFilter").options[i]=new Option(combinedList[i-1]);
@@ -409,6 +411,8 @@ function updateDimensionFilters(){
       document.getElementById("selectDimFilter"+j).options[i]=new Option(combinedList[i-1]);
       document.getElementById("selectDimFilter"+j).selectedIndex = 0;
     }
+    
+    document.getElementById("textAreaDimFilter"+j).value = "";
   }
 }
 
@@ -424,45 +428,54 @@ function updateMetricFilters(){
   combinedList = combinedList.sort();
 
   // The first filter
-  object = document.getElementById("selectMetricFilter");
-  selected = object.value;
+  filter = document.getElementById("selectMetricFilter");
+  selected = filter.value;
 
   for(var i=1; i<combinedList.length; i++){
-    object.options[i]=null;
+    filter.options[i]=null;
   }
 
   for(var i=1; i<combinedList.length+1; i++){
-    object.options[i]=new Option(combinedList[i-1]);
-    object.selectedIndex = 0;
+    filter.options[i]=new Option(combinedList[i-1]);
+    filter.selectedIndex = 0;
   }
 
-  for(var i=0; i<object.options.length; i++){
-    if(object.options[i].value == selected){
-      object.value = selected;
+  // Don't want to keep the filter if the value isn't being saved anyway
+  /*
+  for(var i=0; i<filter.options.length; i++){
+    if(filter.options[i].value == selected){
+      filter.value = selected;
       i=10000;
     }
   }
+  */
+  
+  document.getElementById("textAreaMetricFilter").value = "";
+  document.getElementById("selectMetricFilterOperator").selectedIndex = 0;
 
   // For subsequent Filters
   for(var j=1; j<metricFiltersCount+1; j++){
-    object = document.getElementById("selectMetricFilter"+j);
-    selected = object.value;
+    filter = document.getElementById("selectMetricFilter"+j);
+    selected = filter.value;
 
     for(var i=1; i<combinedList.length; i++){
-      object.options[i]=null;
+      filter.options[i]=null;
     }
 
     for(var i=1; i<combinedList.length+1; i++){
-      object.options[i]=new Option(combinedList[i-1]);
-      object.selectedIndex = 0;
+      filter.options[i]=new Option(combinedList[i-1]);
+      filter.selectedIndex = 0;
     }
 
-    for(var i=0; i<object.options.length; i++){
-      if(object.options[i].value == selected){
-        object.value = selected;
+    for(var i=0; i<filter.options.length; i++){
+      if(filter.options[i].value == selected){
+        filter.value = selected;
         i=10000;
       }
     }
+    
+    document.getElementById("textAreaMetricFilter"+j).value = "";
+    document.getElementById("selectMetricFilterOperator"+j).selectedIndex = 0;
   }
 }
 
@@ -565,9 +578,15 @@ function testSelectedValues(){
 
   if(!defined(dimension) || !defined(metric)){
     alert("You must first select a dimension and metric");
-  }
-  else {
-    getSampleData();
+  } else {
+    getEnteredParams();
+    if(isNaN(numberOfPeriods)){
+      alert("The Number of Periods must be a number.");
+    } else if(isNaN(topFilter)){
+      alert("The Top filter must be a number.");
+    } else {
+      getSampleData();
+    }
   }
 }
 
@@ -575,9 +594,9 @@ function testSelectedValues(){
 function getEnteredParams(){
   sortDir = document.getElementById("sortDir").value;
   sortParam = document.getElementById("sortParam").value;
-  topFilter = document.getElementById("topFilter").value;
+  topFilter = parseInt(document.getElementById("topFilter").value);
   timePeriod = timePeriods[document.getElementById("timePeriod").value];
-  numberOfPeriods = document.getElementById("numberOfPeriods").value;
+  numberOfPeriods = parseInt(document.getElementById("numberOfPeriods").value);
 
   // Custom work for specific parameters
   var paramSplit, output;
@@ -828,7 +847,6 @@ function output(){
 
 //  desc: Queries DC RUM for sample data based on selected options
 function getSampleData(){
-  getEnteredParams();
   buildPostParams();
   param = "";
 
@@ -880,7 +898,7 @@ function buildPostParams(){
   postParams["dimFilters"] = dimFilter;
   postParams["metricFilters"] = metricFilters;
   postParams["sort"] = sort;
-  postParams["topFilter"] = topFilter;
+  postParams["top"] = topFilter;
   postParams["timePeriod"] = timePeriod;
   postParams["numberOfPeriods"] = numberOfPeriods;
 
@@ -1122,6 +1140,7 @@ function reset(){
   document.getElementById('textAreaMetricFilter').value = '';
   document.getElementById('selectMetricFilterOperator').selectedIndex = 0;
   document.getElementById('numberOfPeriods').value = 1;
+  document.getElementById('topFilter').value = 1000;
   document.getElementById('timePeriod').selectedIndex = 0;
   document.getElementById("sampleDataOutput").innerHTML = '';
   document.getElementById("largeDataContent").innerHTML = '';
