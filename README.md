@@ -24,5 +24,3 @@ This image shows how it can be tailored to better suit a particular use. In this
 
 
 For other special requests or particular use cases, feel free to email me: barrebre@icloud.com.
-
- #DataToThePeople
