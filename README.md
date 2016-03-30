@@ -3,24 +3,24 @@ A RESTful helper for DC RUM.
 
 To use this tool:
 
-1) Copy the .html, .js, and .css files to your CAS in [install]/www_root/custom
+1) Copy the RESTfulDC .html, .js, and .css files to your CAS in [install]/www_root/custom
 
 2) Navigate to your CAS https://[hostname]/custom/RESTfulDC.html
 
 3) Log in [twice] and start pulling data!
 
 
-#### Github Version
+#### Standard Version
 
-This image shows what the RESTful Helper looks like in use, downloadable from this Github.
-![RESTful Helper](https://cloud.githubusercontent.com/assets/3485324/9531925/21cfd5b4-4cce-11e5-9241-426baea7ea40.png)
+Using the files in the root directory, this is what the RESTful Helper will look like.
+![standard](https://cloud.githubusercontent.com/assets/3485324/14155693/cbd02da4-f690-11e5-88fb-b9681b6933f0.png)
 
 
-#### Customized Version
+#### Parameters Version
 
-This image shows how it can be tailored to better suit a particular use. In this case, creating a JSON definition to export data to DataDog. This version is available upon request.
+At a previous engagement, I added extra parameters so I could bulk pull metrics and send them to a 3rd party BI tool. If you'd like to have custom parameters, copy the files from the WithParameters folder.
 
-![Target Edition (Customized)](https://cloud.githubusercontent.com/assets/3485324/9531932/2723facc-4cce-11e5-91b7-c4abd01449ac.png)
+![withparams](https://cloud.githubusercontent.com/assets/3485324/14155695/ceb9efaa-f690-11e5-96fb-1638b5ed43b7.png)
 
 
 For other special requests or particular use cases, feel free to email me: brett.barrett@dynatrace.com.
