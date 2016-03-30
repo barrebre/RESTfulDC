@@ -94,6 +94,15 @@ div.column {
     overflow: hidden;
 }
 
+div.smallColumn {
+    height:90%;
+    padding-top:3%;
+}
+
+div.smallColumn select {
+    width:40%;
+}
+
 div.footerCol a{
     color:white;
 }
@@ -123,6 +132,7 @@ div.header {
     height: 2em;
     background-color: #adb6bc;
     position: relative;
+    width: 100%;
 }
 
 div.header button {
@@ -141,7 +151,7 @@ div#userOutputHeader{
 div.content{
     overflow-y: auto;
     overflow-x: hidden;
-    height: 95%;
+    padding-bottom: 5%;
     width: 100%;
     background-color: white;
     position: relative;
@@ -252,7 +262,7 @@ div.lineItem textarea, select{
 }
 
 div #getParameters select {
-    width: 80%;
+    width: 90%;
     float: left;
 }
 
@@ -309,8 +319,8 @@ div#helpDiv h3{
 div#userOutput {
     float:left;
     width: 98%;
-    overflow-y:auto;
-    height: 70%;
+    overflow-y: scroll;
+    max-height: 400px;
 
     font-size: 1em;
     padding-left: 2%;
@@ -318,18 +328,6 @@ div#userOutput {
 
     border: solid black;
     border-width: 1px;
-}
-
-div#userOutputDiv{
-    float: left;
-    width: 100%;
-    height: 50%;
-    overflow-x: hidden;
-    background-color: white;
-}
-
-div#restQueryParametersContent {
-    height: 55%;
 }
 
 div#busy {
@@ -379,4 +377,50 @@ div.lineItem .removeButton{
     height: 2em;
     position: absolute;
     right: .5em;
+}
+/*
+div#dataDogParametersDiv, #dataDogScriptDiv {
+    float: left;
+    width: 100%;
+    height: 30%;
+    overflow: hidden;
+    background-color: white;
+}
+
+div#dataDogParamsHead, #dataDogScriptHead {
+    height: 2em;
+    background-color: #adb6bc;
+    width: 100%;
+    position: relative;
+}
+
+div#dataDogScriptHead button, #dataDogParamsHead button{
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 2.5em;
+}
+
+div#dataDog {
+    width: 32%;
+    height: 100%;
+    max-height: 70%;
+    min-width: 150px;
+    float: left;
+    margin-left: 1%;
+    margin-top: 1%;
+    overflow: auto;
+}
+
+div#dataDogOutput.content {
+    padding-left: 2%;
+}
+
+div#dataDogParams {
+    height: 70%;
+    overflow-y: auto;
+}
+
+div#dataDogParams select{
+    width: 40%;
 }

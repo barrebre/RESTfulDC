@@ -1,0 +1,220 @@
+<!--
+   DC RUM Restful Helper
+
+   This tool is used to assist users in pulling data from DC RUM
+   using the RESTful interface
+
+   For questions, please email brett.barrett@dynatrace.com
+
+   Version: 2.0.3
+-->
+
+<html>
+  <head>
+    <title>DC RUM RESTful Helper</title>
+
+    <link rel="stylesheet" type="text/css" href="RESTfulDC.css">
+    <script src="RESTfulDCParams.js"></script>
+  </head>
+
+  <body>
+    <div class="title">
+      <h1>DMI REST Services</h1>
+      <div id="query">
+        <p id="currQuery"></p>
+      </div>
+      <div id="serverNameDiv">
+        <p>Server name: <textarea id="serverName" style="width: 12em;" oninput="setServerName(this.value);"></textarea></p>
+      </div>
+    </div>
+    <div class="body">
+      <div id="getParameters" class="column">
+        <div class="header">
+          <div id="getParametersTitle">
+            <h2>Parameters</h2>
+          </div>
+          <button id="sampleDataButton" onClick="testSelectedValues()">Get data</button>
+        </div>
+        <div class="content" id="getParametersBody">
+          <div id="applications" class="lineItem">
+            <h3>Data Sources</h3>
+            <select id="datasource" onchange="updateQueriedParameters('datasource');"></select>
+          </div>
+
+          <div id="dataviews" class="lineItem">
+            <h3>Dataviews</h3>
+            <select id="dataview" onchange="updateQueriedParameters('dataview');"></select>
+          </div>
+
+          <div id="resolutions" class="lineItem">
+            <h3>Resolution</h3>
+            <select id="resolution" onchange="updateQueriedParameters('resolution');"></select>
+          </div>
+
+          <div id="dimensions" class="lineItem">
+            <h3>
+              Dimensions
+              <button id="addDimButton" onclick="addDimensionQuery();" class="addButton">+</button>
+              <button id="remDimButton" onclick="removeDimensionQuery();" class="removeButton">-</button>
+            </h3>
+            <div id="dimensionSelectors"></div>
+          </div>
+
+          <div id="metrics" class="lineItem">
+            <h3>Metrics
+              <button id="addMetricButton" onclick="addMetricQuery();" class="addButton">+</button>
+              <button id="remMetricButton" onclick="removeMetricQuery();" class="removeButton">-</button>
+            </h3>
+            <div id="metricSelectors"></div>
+          </div>
+
+          <div class="lineItem">
+            <h3>Time Period</h3>
+            <select id="timePeriod"></select>
+          </div>
+        </div>
+        
+        <div id="JSONParametersDiv" class="smallColumn">
+          <div id="JSONParametersHead" class="header">
+            <h2>
+              JSON Parameters
+              <button id="getJSONScript" onclick="buildJSON();">Generate JSON</button>
+            </h2>
+          </div>
+          <div id="JSONParameters" class="content">
+            <div class="lineItem">
+              <h3>Selected Columns</h3>
+              <select id='dim'><option selected>Tag</option></select>
+              <select id='met'><option selected>Value</option></select>
+            </div>
+            <div class='lineItem'>
+              <h3>Custom Metric Name</h3>
+              <textarea id='metricName'></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="restQueryParameters" class="column">
+        <div class="header">
+          <h2>Filters and Options</h2>
+        </div>
+        <div id="restQueryParametersContent" class="content">
+
+          <div id="dimFiltersDiv" class="lineItem">
+            <h3>Dimension Filters
+            <button id="addDimButton" onclick="addDimensionFilterLine();" class="addButton">+</button>
+            <button id="remDimButton" onclick="removeDimensionFilterLine();" class="removeButton">-</button>
+            </h3>
+          </div>
+
+          <div id="metricFiltersDiv" class="lineItem">
+            <h3>Metric Filters
+            <button id="addDimButton" onclick="addMetricFilterLine();" class="addButton">+</button>
+            <button id="remDimButton" onclick="removeMetricFilterLine();" class="removeButton">-</button>
+            </h3>
+          </div>
+
+          <div id="sortDiv" class="lineItem">
+            <h3>Sort</h3>
+            <select id="sortParam" class="rightRow" style="width: 60%;">
+              <option value="">Select a parameter to sort by</option>
+            </select><select id="sortDir" class="leftRow" style="width: 30%;">
+              <option value="">Select a sort type</option>
+              <option value="ASC">Ascending</option>
+              <option value="DESC">Descending</option>
+            </select>
+          </div>
+
+          <div class="lineItem" style="display: none;">
+            <h3>Top Filter</h3>
+            <textarea id="topFilter"></textarea>
+          </div>
+
+          <div class="lineItem">
+            <h3>Number of Periods</h3>
+            <textarea id="numberOfPeriods">1</textarea>
+          </div>
+        </div>
+        <div id="userOutputDiv" class="smallColumn">
+          <div id="userOutputHeader" class="header">
+            <h2>Console</h2>
+            <button id='copyURLButton' onclick="copyURL();">Copy URL</button>
+          </div>
+          <div id="userOutput"></div>
+        </div>
+      </div>
+
+      <div id="sampleData" class="column">
+        <div class="header">
+          <h2>Sample Data</h2>
+          <button onclick="enlargeSampleData();">Enlarge</button>
+        </div>
+
+        <div id="sampleDataOutput" class="content"></div>
+
+        <div id="JSONScriptDiv" class="smallColumn">
+          <div id="JSONScriptHead" class="header">
+            <h2>JSON Script</h2>
+            <button id='copyJSONButton' onclick="clipboard('JSONOutput',0);">Copy JSON</button>
+          </div>
+          <div id="JSONOutput" class="content"></div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footerCol">
+          Developed by Brett Barrett
+        </div>
+        <div class="footerCol" style="left: 46%;">
+          <a onClick="help();" style="text-decoration: underline; cursor:pointer;">Help</a>
+        </div>
+        <button onclick="reset();" style="height:2em;">Reset Helper</button>
+      </div>
+
+      <div id="largeDataDiv">
+        <h1>Sample Data</h1>
+
+        <div class="closeButton" onclick="enlargeSampleData();">X</div>
+        <div id="largeDataContent"></div>
+      </div>
+
+      <div id="busy">
+        <div id="busyContent">
+          <div class="header" style="padding: 10px;"><h1>Querying the CAS...</h1></div>
+          <center><img src="/img/ajax-loader.gif"><br><br><button onclick="cancelRequest()">Cancel the request</button></center>
+        </div>
+      </div>
+
+      <div id="helpDiv">
+        <h1>DC RUM RESTful Help</h1>
+
+        <div class="closeButton" onclick="help();">X</div>
+
+        <div id="helpContent">
+          <div id="tableOfContents">
+            <h2>Table of contents:</h2>
+          </div>
+
+          <h3><a>Why do I always have to log back in after a refresh?</a></h3>
+          Something about pulling possible parameters from the CAS using the /rest/dmiquery URI forces the user to log back into the CAS upon leaving the RESTful page.
+
+          <h3><a>Empty return set</a></h3>
+          There are some Application / Dimensions / Metrics combinations that, although appear from the RESTful helper, may not actually provide any data. This could be because there's no data in the CAS for that combination.
+
+          <h3><a>Can not connect to CAS</a></h3>
+          If you have a problem connecting to the CAS, verify the CAS server name is correct in the top-right server name box.
+          <br><br>
+          *Note*
+          Due to XSS issues, you should only use this tool on the CAS you are querying data from. The server name field is only to verify the server name was parsed correctly from the URI.
+
+          <h3><a>No dimension or metric filters</a></h3>
+          Make sure to select both a Dimension and a Metric before selecting a filter or sort option.<br>
+
+          <h3><a>RESTful Helper does not appear correctly</a></h3>
+          The RESTful Helper is optimized for Chrome on a 1080p display. If your resolution is lower, zoom out and the page should fit better.<br>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

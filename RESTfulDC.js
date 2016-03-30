@@ -57,19 +57,24 @@ var start, now, time;
 *   Begin Logic
 */
 
+var loaded = 0;
 window.onload = function() {
-  getServerNameAndPath();
-  addDimensionQuery();
-  addMetricQuery();
-  addDimensionFilterLine();
-  addMetricFilterLine();
-  setTimePeriods();
-  addDictionaryDefinitions();
+  if(!loaded){
+    getServerNameAndPath();
+    addDimensionQuery();
+    addMetricQuery();
+    addDimensionFilterLine();
+    addMetricFilterLine();
+    setTimePeriods();
+    addDictionaryDefinitions();
 
-  setDefaultSelectors(1);
-  updateQueriedParameters("default");
+    setDefaultSelectors(1);
+    updateQueriedParameters("default");
 
-  setHelpAnchors();
+    setHelpAnchors();
+
+    loaded++;
+  }
 }
 
 //  desc: Toggles the help div on and off.
@@ -392,8 +397,6 @@ function updateDimensionFilters(){
   for(var i=1; i<combinedList.length; i++){
     document.getElementById("selectDimFilter").options[i]=null;
   }
-  
-  document.getElementById("textAreaDimFilter").value = "";
 
   for(var i=1; i<combinedList.length+1; i++){
     document.getElementById("selectDimFilter").options[i]=new Option(combinedList[i-1]);
@@ -411,8 +414,6 @@ function updateDimensionFilters(){
       document.getElementById("selectDimFilter"+j).options[i]=new Option(combinedList[i-1]);
       document.getElementById("selectDimFilter"+j).selectedIndex = 0;
     }
-    
-    document.getElementById("textAreaDimFilter"+j).value = "";
   }
 }
 
@@ -428,54 +429,45 @@ function updateMetricFilters(){
   combinedList = combinedList.sort();
 
   // The first filter
-  filter = document.getElementById("selectMetricFilter");
-  selected = filter.value;
+  object = document.getElementById("selectMetricFilter");
+  selected = object.value;
 
   for(var i=1; i<combinedList.length; i++){
-    filter.options[i]=null;
+    object.options[i]=null;
   }
 
   for(var i=1; i<combinedList.length+1; i++){
-    filter.options[i]=new Option(combinedList[i-1]);
-    filter.selectedIndex = 0;
+    object.options[i]=new Option(combinedList[i-1]);
+    object.selectedIndex = 0;
   }
 
-  // Don't want to keep the filter if the value isn't being saved anyway
-  /*
-  for(var i=0; i<filter.options.length; i++){
-    if(filter.options[i].value == selected){
-      filter.value = selected;
+  for(var i=0; i<object.options.length; i++){
+    if(object.options[i].value == selected){
+      object.value = selected;
       i=10000;
     }
   }
-  */
-  
-  document.getElementById("textAreaMetricFilter").value = "";
-  document.getElementById("selectMetricFilterOperator").selectedIndex = 0;
 
   // For subsequent Filters
   for(var j=1; j<metricFiltersCount+1; j++){
-    filter = document.getElementById("selectMetricFilter"+j);
-    selected = filter.value;
+    object = document.getElementById("selectMetricFilter"+j);
+    selected = object.value;
 
     for(var i=1; i<combinedList.length; i++){
-      filter.options[i]=null;
+      object.options[i]=null;
     }
 
     for(var i=1; i<combinedList.length+1; i++){
-      filter.options[i]=new Option(combinedList[i-1]);
-      filter.selectedIndex = 0;
+      object.options[i]=new Option(combinedList[i-1]);
+      object.selectedIndex = 0;
     }
 
-    for(var i=0; i<filter.options.length; i++){
-      if(filter.options[i].value == selected){
-        filter.value = selected;
+    for(var i=0; i<object.options.length; i++){
+      if(object.options[i].value == selected){
+        object.value = selected;
         i=10000;
       }
     }
-    
-    document.getElementById("textAreaMetricFilter"+j).value = "";
-    document.getElementById("selectMetricFilterOperator"+j).selectedIndex = 0;
   }
 }
 
@@ -578,15 +570,10 @@ function testSelectedValues(){
 
   if(!defined(dimension) || !defined(metric)){
     alert("You must first select a dimension and metric");
-  } else {
-    getEnteredParams();
-    if(isNaN(numberOfPeriods)){
-      alert("The Number of Periods must be a number.");
-    } else if(isNaN(topFilter)){
-      alert("The Top filter must be a number.");
-    } else {
-      getSampleData();
-    }
+  }
+  else {
+    buildJSON();
+    getSampleData();
   }
 }
 
@@ -594,9 +581,9 @@ function testSelectedValues(){
 function getEnteredParams(){
   sortDir = document.getElementById("sortDir").value;
   sortParam = document.getElementById("sortParam").value;
-  topFilter = parseInt(document.getElementById("topFilter").value);
+  topFilter = document.getElementById("topFilter").value;
   timePeriod = timePeriods[document.getElementById("timePeriod").value];
-  numberOfPeriods = parseInt(document.getElementById("numberOfPeriods").value);
+  numberOfPeriods = document.getElementById("numberOfPeriods").value;
 
   // Custom work for specific parameters
   var paramSplit, output;
@@ -847,6 +834,7 @@ function output(){
 
 //  desc: Queries DC RUM for sample data based on selected options
 function getSampleData(){
+  getEnteredParams();
   buildPostParams();
   param = "";
 
@@ -898,7 +886,7 @@ function buildPostParams(){
   postParams["dimFilters"] = dimFilter;
   postParams["metricFilters"] = metricFilters;
   postParams["sort"] = sort;
-  postParams["top"] = topFilter;
+  postParams["topFilter"] = topFilter;
   postParams["timePeriod"] = timePeriod;
   postParams["numberOfPeriods"] = numberOfPeriods;
 
@@ -1140,8 +1128,98 @@ function reset(){
   document.getElementById('textAreaMetricFilter').value = '';
   document.getElementById('selectMetricFilterOperator').selectedIndex = 0;
   document.getElementById('numberOfPeriods').value = 1;
-  document.getElementById('topFilter').value = 1000;
   document.getElementById('timePeriod').selectedIndex = 0;
   document.getElementById("sampleDataOutput").innerHTML = '';
   document.getElementById("largeDataContent").innerHTML = '';
+}
+
+function verifyCol(caller){
+  var val = document.getElementById(caller).value;
+  
+  if(caller == "dim"){
+    if(val>dimensionCount){
+      userOutput = "<font color='red'>The </font>";
+      userOutput += "<font color='lightblue'>tag </font>";
+      userOutput += "<font color='red'>column index you choose was too high. Try another.</font><br>"; output();
+      document.getElementById(caller).selectedIndex = 0;
+    }
+  } else {
+    if(val>metricCount+dimensionCount+1){
+      userOutput = "<font color='red'>The </font>";
+      userOutput += "<font color='lightgreen'>value </font>";
+      userOutput += "<font color='red'>column index you choose was too high. Try another.</font><br>"; output();
+      document.getElementById(caller).selectedIndex = 0;
+    } else if(val <= dimensionCount) {
+      userOutput = "<font color='red'>The </font>";
+      userOutput += "<font color='lightgreen'>value </font>";
+      userOutput += "<font color='red'>column index you choose was too low. Try another.</font><br>"; output();
+      document.getElementById(caller).selectedIndex = 0;
+    } else {
+    }
+  }
+
+  if(!document.getElementById("sampleDataOutput").innerHTML.includes("tr")){
+  } else {
+    // Reset old cells
+    var res = document.getElementById("results");
+    if(caller == "dim"){
+      dimNum = document.getElementById("dim").value;
+      if(defined(res.childNodes[0].childNodes[0].childNodes[dimNum]))
+        res.childNodes[0].childNodes[0].childNodes[dimNum].style.backgroundColor = "white"
+
+
+      // Set new cells
+      res.childNodes[0].childNodes[0].childNodes[dimNum].style.backgroundColor = "lightblue"
+      
+    } else {
+      metNum = document.getElementById("met").value;
+      if(defined(res.childNodes[0].childNodes[0].childNodes[metNum]))
+        res.childNodes[0].childNodes[0].childNodes[metNum].style.backgroundColor = "white"
+      
+
+      // Set new cells
+      res.childNodes[0].childNodes[0].childNodes[metNum].style.backgroundColor = "lightgreen"
+      
+    }
+  }
+}
+
+// JSON - Builds the output
+// There is old functionality in this method. Originally, I used a file that would read
+// from a list of JSON objects to generate multiple requests and push the data to a 3rd
+// party BI tool. If you need to do so, please use the RESTfulDCParams files
+function buildJSON(){
+  getEnteredParams();
+  buildPostParams();
+
+  var text = "{";
+  text += '"appId": "' + postParams['appId'] + '",';
+  text += '"viewId": "' + postParams['viewId'] + '",';
+  text += '"dataSourceId": "' + postParams['dataSourceId'] + '",';
+  text += '"dimensionIds": ' + postParams['dimensionIds'].split("'").join("\"") + ',';
+  text += '"metricIds": ' + postParams['metricIds'].split("'").join("\"") + ',';
+  text += '"dimFilters": ' + postParams['dimFilters'].split("'").join("\"") + ',';
+  text += '"metricFilters": ' + postParams['metricFilters'].split("'").join("\"") + ',';
+  text += '"sort": ' + postParams['sort'].split("'").join("\"") + ',';
+  text += '"top": ' + postParams['topFilter'] + ',';
+  text += '"resolution": "' + postParams['resolution'] + '",';
+  text += '"timePeriod": "' + postParams['timePeriod'] + '",';
+  text += '"numberOfPeriods": ' + postParams['numberOfPeriods'] + '}';
+  
+  document.getElementById("JSONOutput").innerHTML = text;
+}
+
+//  desc: Copies text
+//  location: Which div to select
+//  nodeNum: Which node to copy from the div
+function clipboard(location, nodeNum){
+  var text = document.getElementById(location).childNodes[nodeNum];
+
+  defined(text) ? selectText(text) : alert("There is nothing to be copied");
+
+  var successful = document.execCommand('copy');
+  var msg = successful ? 'successful' : 'unsuccessful';
+
+  userOutput = "Copy was "+msg+".<br>";
+  output();
 }

@@ -70,8 +70,7 @@
 
           <div class="lineItem">
             <h3>Time Period</h3>
-            <select id="timePeriod">
-            </select>
+            <select id="timePeriod"></select>
           </div>
         </div>
       </div>
@@ -107,9 +106,9 @@
             </select>
           </div>
 
-          <div class="lineItem">
+          <div class="lineItem" style="display: none;">
             <h3>Top Filter</h3>
-            <textarea id="topFilter">1000</textarea>
+            <textarea id="topFilter"></textarea>
           </div>
 
           <div class="lineItem">
@@ -117,10 +116,10 @@
             <textarea id="numberOfPeriods">1</textarea>
           </div>
         </div>
-        <div id="userOutputDiv">
+        <div id="userOutputDiv" class="smallColumn">
           <div id="userOutputHeader" class="header">
             <h2>Console</h2>
-            <button onclick="copyURL();">Copy URL</button>
+            <button id='copyURLButton' onclick="copyURL();">Copy URL</button>
           </div>
           <div id="userOutput"></div>
         </div>
@@ -131,7 +130,15 @@
           <h2>Sample Data</h2>
           <button onclick="enlargeSampleData();">Enlarge</button>
         </div>
-        <div id="sampleDataOutput" class="content">
+
+        <div id="sampleDataOutput" class="content"></div>
+
+        <div id="JSONScriptDiv" class="smallColumn">
+          <div id="JSONScriptHead" class="header">
+            <h2>JSON Script</h2>
+            <button id='copyJSONButton' onclick="clipboard('JSONOutput',0);">Copy JSON</button>
+          </div>
+          <div id="JSONOutput" class="content"></div>
         </div>
       </div>
 
@@ -158,6 +165,7 @@
           <center><img src="/img/ajax-loader.gif"><br><br><button onclick="cancelRequest()">Cancel the request</button></center>
         </div>
       </div>
+
       <div id="helpDiv">
         <h1>DC RUM RESTful Help</h1>
 
