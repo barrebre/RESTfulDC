@@ -6,7 +6,7 @@
 *
 *   For questions, please email brett.barrett@dynatrace.com
 *
-*   Version: 2.0.4
+*   Version: 2.0.5
 */
 
 /*
@@ -215,6 +215,13 @@ function addMetricFilterLine(){
     options = ["!=","<","<=",">",">="];
     giveOptions("selectMetricFilterOperator",options,1);
 
+    // Builds the filter selector
+    selector = "<select id='selectMetricFilterType' style='width: 8%; float: left;'><option value='D'>D</option></select>";
+    document.getElementById("metricFiltersDiv").innerHTML += selector;
+
+    options = ["V"];
+    giveOptions("selectMetricFilterType",options,1);
+
     // Builds the filter value text area
     textArea = "<textarea id='textAreaMetricFilter' style='float: left;'></textarea>";
     document.getElementById("metricFiltersDiv").innerHTML += textArea;
@@ -225,6 +232,10 @@ function addMetricFilterLine(){
     document.getElementById("metricFiltersDiv").appendChild(selector);
 
     selector = document.getElementById("selectMetricFilterOperator").cloneNode(true);
+    selector.id += metricFiltersCount + "";
+    document.getElementById("metricFiltersDiv").appendChild(selector);
+
+    selector = document.getElementById("selectMetricFilterType").cloneNode(true);
     selector.id += metricFiltersCount + "";
     document.getElementById("metricFiltersDiv").appendChild(selector);
 
@@ -239,11 +250,13 @@ function removeMetricFilterLine(){
   if(metricFiltersCount>0){
     document.getElementById("selectMetricFilter"+metricFiltersCount).remove();
     document.getElementById("selectMetricFilterOperator"+metricFiltersCount).remove();
+    document.getElementById("selectMetricFilterType"+metricFiltersCount).remove();
     document.getElementById("textAreaMetricFilter"+metricFiltersCount).remove();
     metricFiltersCount--;
   } else {
     document.getElementById("selectMetricFilter").selectedIndex = 0;
     document.getElementById("selectMetricFilterOperator").selectedIndex = 0;
+    document.getElementById("selectMetricFilterType").selectedIndex = 0;
     document.getElementById("textAreaMetricFilter").value = "";
   }
 }
@@ -663,21 +676,27 @@ function buildDimensionFilter(){
 //  desc: Builds the JSON metric filter
 //  return: The formatted JSON metric filter
 function buildMetricFilter(){
-  var select = operator = value = tmp = "";
+  var select = operator = value = type = tmp = "";
 
   tmp = "[";
 
-  for(var i=3; i<document.getElementById("metricFiltersDiv").childNodes.length; i=i+3){
+  for(var i=3; i<document.getElementById("metricFiltersDiv").childNodes.length; i=i+4){
     select = document.getElementById("metricFiltersDiv").childNodes[i].value;
     operator = document.getElementById("metricFiltersDiv").childNodes[i+1].value;
-    value = document.getElementById("metricFiltersDiv").childNodes[i+2].value;
+    type = document.getElementById("metricFiltersDiv").childNodes[i+2].value;
+    value = document.getElementById("metricFiltersDiv").childNodes[i+3].value;
 
+    if(type=="D")
+      type=1;
+    else
+      type=0;
+    
     if(select != "DEF"){
       if(value != ""){
         tmp += "['";
         tmp += dictionary[select]+"','"; ////the metric
         tmp += operator+"',"; ///the operator
-        tmp += value+",1],"; ////the value
+        tmp += value+","+type+"],"; ////the value
       }
       else{
         alert("The "+select+" filter was not used because there was no value");
