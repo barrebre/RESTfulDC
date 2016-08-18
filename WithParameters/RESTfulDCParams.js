@@ -267,8 +267,8 @@ function removeMetricFilterLine(){
   if(metricFiltersCount>0){
     document.getElementById("selectMetricFilter"+metricFiltersCount).remove();
     document.getElementById("selectMetricFilterOperator"+metricFiltersCount).remove();
-    document.getElementById("textAreaMetricFilter"+metricFiltersCount).remove();
     document.getElementById("selectMetricFilterType"+metricFiltersCount).remove();
+    document.getElementById("textAreaMetricFilter"+metricFiltersCount).remove();
     metricFiltersCount--;
   } else {
     document.getElementById("selectMetricFilter").selectedIndex = 0;
