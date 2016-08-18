@@ -4,7 +4,7 @@
 *
 *   For questions, please email brett.barrett@dynatrace.com
 *
-*   Version: 2.0.1
+*   Version: 2.0.5
 */
 
 html {
@@ -251,7 +251,7 @@ div #dimFiltersDiv textarea {
 }
 
 div #metricFiltersDiv textarea {
-    width: 32%;
+    width: 25%;
     margin-left: 5px;
     font-family: Arial;
     float: left;
